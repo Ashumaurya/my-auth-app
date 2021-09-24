@@ -1,53 +1,112 @@
 import { useState } from "react";
+import { useAuth } from "../../context/authProvider";
+import { useRouter } from "next/router";
 
 const Login = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
 
   const { email, password } = data;
+  const { SignInWithEmail } = useAuth();
+  const router = useRouter();
+
+  const handleValidation = () => {
+    let fields = data;
+    let formIsValid = true;
+
+    //Email
+    if (!fields["email"]) {
+      formIsValid = false;
+      setError("Email cannot be empty");
+      return formIsValid;
+    }
+
+    if (typeof fields["email"] !== "undefined") {
+      let lastAtPos = fields["email"].lastIndexOf("@");
+      let lastDotPos = fields["email"].lastIndexOf(".");
+
+      if (
+        !(
+          lastAtPos < lastDotPos &&
+          lastAtPos > 0 &&
+          fields["email"].indexOf("@@") == -1 &&
+          lastDotPos > 2 &&
+          fields["email"].length - lastDotPos > 2
+        )
+      ) {
+        formIsValid = false;
+        setError("Email is not valid");
+        return formIsValid;
+      }
+    }
+    //password
+
+    if (!fields["password"]) {
+      formIsValid = false;
+      setError("Password can't be empty");
+      return formIsValid;
+    }
+
+    return formIsValid;
+  };
 
   const handleOnChange = (name) => (e) => {
     setData({ ...data, [name]: e.target.value });
   };
   const handleOnSubmit = (event) => {
     event.preventDefault();
-
-    setData({ ...data, firstName: "", lastName: "", email: "", feedback: "" });
+    if (handleValidation()) {
+      SignInWithEmail(email, password)
+        .then(() => {
+          setData({ ...data, email: "", password: "" });
+          router.push("/welcome");
+        })
+        .catch((err) => {
+          console.log(err);
+          const errorMessage = err.message;
+          setError(errorMessage);
+        });
+    } else {
+      console.log(error);
+    }
   };
 
   return (
     <div className="my-10 h-auto">
-      <form className="h-full my-20">
+      <form className="h-full my-8">
+        <div className="flex justify-center items-center text-sm font-bold py-4 text-red-400">
+          {error}
+        </div>
         <div className="flex flex-col">
           <div className="">
             <input
               className="m-2 p-2 mt-6 pl-2 placeholder-gray-500 border-b-2 min-w-full min-h-full  tracking-wide  focus:outline-none placeholder-opacity-75 text-sm xl:pt-20"
               placeholder="jonh@email.com*"
+              type="email"
               value={email}
               onChange={handleOnChange("email")}
             />
             <input
               className="p-2  m-2  mt-4 pl-2 placeholder-gray-500  min-w-full min-h-full border-b-2 tracking-wide  focus:outline-none placeholder-opacity-75 text-sm xl:pt-10 "
               placeholder="Password"
+              type="password"
               value={password}
               onChange={handleOnChange("password")}
             />
           </div>
 
-          <div className="mt-4 xl:mt-10 xl:pt-32">
-            <button className="w-full m-2 p-2 bg-black text-white border-2 shadow-md rounded-xl text-sm xl:text-md">
+          <div className="mt-4 xl:mt-10 xl:pt-20">
+            <button
+              className="w-full m-2 p-2 bg-black text-white border-2 shadow-md rounded-xl text-sm xl:text-md"
+              onClick={handleOnSubmit}
+            >
               Log In{" "}
             </button>
             <div className="flex justify-center font-bold"> or </div>
             <div className="flex-col flex xl:flex-row ">
-              <button className="w-full m-2 p-2 flex justify-center items-center bg-black text-white border-2 border-black shadow-md rounded-xl text-sm xl:text-md">
-                <span className="iconify" data-icon="octicon:mark-github-16">
-                  {" "}
-                </span>
-                <div className="mx-2">Log In with Github</div>
-              </button>
               <button className="w-full m-2 flex justify-center items-center p-2 bg-white border-2 shadow-md rounded-xl text-sm xl:text-md">
                 <span>
                   {" "}
