@@ -39,6 +39,9 @@ const Welcome = () => {
               <div className="my-4">
                 DisplayName : {currentUser.displayName}{" "}
               </div>
+              <div className="my-4">
+                Last Singed In : {currentUser.metadata.lastSignInTime}
+              </div>
             </div>
           )}
         </div>
