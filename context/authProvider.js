@@ -4,8 +4,11 @@ import { app, auth } from "../firebase/firebase";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
+  PhoneAuthProvider,
   signInWithEmailAndPassword,
   signOut,
+  updatePhoneNumber,
+  updateProfile,
 } from "firebase/auth";
 
 // Auth context logics
@@ -33,6 +36,12 @@ export const AuthProvider = ({ children }) => {
     return signInWithEmailAndPassword(auth, email, password);
   }
 
+  function UpdateUserProfile(firstName, lastName, phone) {
+    return updateProfile(auth.currentUser, {
+      displayName: `${firstName} ${lastName}`,
+    });
+  }
+
   // signOut function
   function SignUserOut() {
     return signOut(auth);
@@ -53,6 +62,7 @@ export const AuthProvider = ({ children }) => {
     SignUserOut,
     SignUpWithEmail,
     SignInWithEmail,
+    UpdateUserProfile,
   };
   return (
     <div>

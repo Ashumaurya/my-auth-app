@@ -88,7 +88,7 @@ const SignUp = () => {
       if (handleValidation()) {
         SignUpWithEmail(email, password)
           .then((result) => {
-            router.push("/welcome");
+            router.push("/userinfo");
             setData({
               ...data,
               email: "",
@@ -100,7 +100,6 @@ const SignUp = () => {
             console.log(error);
             const errorMessage = error.message;
             setError(errorMessage);
-            throw new Error(error);
           });
 
         setError("");
